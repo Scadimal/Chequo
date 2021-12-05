@@ -67,6 +67,12 @@ namespace Chequo.Controllers
         };
         [EnableCors("LocalPolicy")]
         [HttpGet]
+        /**
+        * Returns a decimal number in english
+        *
+        * @param {decimal} credit The number to translate.
+        * @return {String} 'credit' translated into common english in DOLLARS and CENTS
+        */
         public String Get(decimal credit)
         {
             if(credit == 0)
@@ -87,12 +93,24 @@ namespace Chequo.Controllers
             }
             return dollars + cents;
         }
+        
         private String numberToEnglish(decimal num){
             /* 
                 This is a scalable solution in case Australia ever falls victim to hyperinflation
                 (Honestly I think a switch case for every place value is more readable, but I figured this
                 was better to showcase)
             */
+
+            /**
+            * Returns a decimal number in english. This was made to take in a decimal to ensure the function
+            * was compatible with all valid numbers
+            *
+            * @param {decimal} num The number to translate.
+            * @return {String} 'num' translated into common english
+            */
+            if(!(Math.Abs(num % 1) == 0))
+                throw new Exception("Cannot call numberToEnglish with input " + num);
+                
             String englishNum = "";
             int power = num.ToString().Length-1;
             decimal divider = (decimal) Math.Pow(10, power - (power % 3));
@@ -112,6 +130,7 @@ namespace Chequo.Controllers
                 englishNum += (nextNum < 100 ? " AND " : " ") + numberToEnglish(nextNum);
             return englishNum;
         }
+
         private String hundredsToEnglish(int hundreds){
             String output = "";
             switch(hundreds.ToString().Length){
