@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Cors;
 
 namespace Chequo.Controllers
 {
@@ -64,7 +65,7 @@ namespace Chequo.Controllers
             "QUADRILLION",
             "QUINTILLION"
         };
-        
+        [EnableCors("LocalPolicy")]
         [HttpGet]
         public String Get(decimal credit)
         {
@@ -95,7 +96,7 @@ namespace Chequo.Controllers
             String englishNum = "";
             int power = num.ToString().Length-1;
             decimal divider = (decimal) Math.Pow(10, power - (power % 3));
-            if(power > 3){
+            if(power >= 3){
                 englishNum += hundredsToEnglish((int)((num/divider) % divider));
             } else {
                 englishNum += hundredsToEnglish((int)num);
@@ -104,11 +105,11 @@ namespace Chequo.Controllers
                 //If we don't have a word defined for this power, simply make one up and hope the banks don't notice
                 englishNum += " " + numberToEnglish(power/3 - 1) + "TILLION";
             else{
-                englishNum += power > 3 ? " " + placeValues[(power)/3] : "";
+                englishNum += power >= 3 ? " " + placeValues[(power)/3] : "";
             }
             decimal nextNum = num % (decimal) Math.Pow(10, power-(power%3));
             if(nextNum >= 1)
-                englishNum += (nextNum < 1000 ? " AND " : " ") + numberToEnglish(nextNum);
+                englishNum += (nextNum < 100 ? " AND " : " ") + numberToEnglish(nextNum);
             return englishNum;
         }
         private String hundredsToEnglish(int hundreds){

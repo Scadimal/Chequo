@@ -16,6 +16,7 @@ namespace Chequo
 {
     public class Startup
     {
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -26,7 +27,12 @@ namespace Chequo
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddCors(o => o.AddPolicy("LocalPolicy", builder =>
+            {
+                builder.WithOrigins("http://localhost:5000")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            }));
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -49,6 +55,8 @@ namespace Chequo
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseCors();
 
             app.UseMiddleware(typeof(Middleware.ExceptionHandlingMiddleware));
 
